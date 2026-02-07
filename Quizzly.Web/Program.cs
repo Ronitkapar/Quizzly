@@ -24,7 +24,7 @@ namespace Quizzly.Web
            
 
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("HostingConnection")));
+                options.UseSqlite(builder.Configuration.GetConnectionString("HostingConnection")));
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IInstructorManagementService, InstructorManagementService>();
@@ -85,6 +85,13 @@ namespace Quizzly.Web
                 });
 
             var app = builder.Build();
+
+            // Initialize database
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                dbContext.Database.EnsureCreated();
+            }
 
             // Seed roles at startup
             SeedRolesAsync(app.Services).GetAwaiter().GetResult();
