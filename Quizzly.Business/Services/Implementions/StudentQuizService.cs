@@ -71,9 +71,9 @@ namespace Quizzly.Business.Services.Implementions
             var quiz = attempt.Quiz!;
 
             var nowUtc = DateTime.UtcNow;
-            if (quiz.StartAt.HasValue && nowUtc < quiz.StartAt.Value)
+            if (quiz.StartAt.HasValue && nowUtc < quiz.StartAt.Value.ToUniversalTime())
                 throw new InvalidOperationException("Quiz has not started yet.");
-            if (quiz.EndAt.HasValue && nowUtc > quiz.EndAt.Value)
+            if (quiz.EndAt.HasValue && nowUtc > quiz.EndAt.Value.ToUniversalTime())
                 throw new InvalidOperationException("Quiz has expired.");
 
             var endsAt = attempt.StartedAt.AddMinutes(quiz.DurationMintes);
